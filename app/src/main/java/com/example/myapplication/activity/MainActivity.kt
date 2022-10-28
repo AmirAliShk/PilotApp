@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.myapplication.database.MyRoom
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.fragment.AddPointFragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var binding: ActivityMainBinding
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    val dataBase = MyRoom.getDatabase(applicationContext)
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.myapplication.activity.MainActivity
 import com.example.myapplication.database.LocationsTable
-import com.example.myapplication.database.MyRoom
 import com.example.myapplication.databinding.FragmentAddPointBinding
 
 class AddPointFragment(var east: String, var north: String, var elevation: String) : Fragment() {
 
     private lateinit var binding: FragmentAddPointBinding
-    var database = MyRoom
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -23,7 +22,16 @@ class AddPointFragment(var east: String, var north: String, var elevation: Strin
         binding.edtElevation.setText(elevation)
 
         binding.btnAdd.setOnClickListener {
-
+            val locationsDao = MainActivity().dataBase.locationsDao()
+            val loc = LocationsTable(
+                0,
+                binding.edtName.text.toString(),
+                binding.edtDescription.text.toString(),
+                binding.edtEast.text.toString(),
+                binding.edtNorth.text.toString(),
+                binding.edtElevation.text.toString()
+            )
+            locationsDao.insertLocation(loc)
         }
 
         return binding.root

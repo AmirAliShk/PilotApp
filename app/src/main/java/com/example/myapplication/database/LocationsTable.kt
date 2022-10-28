@@ -9,7 +9,7 @@ data class LocationsTable(
     @PrimaryKey(autoGenerate = true) var recordId: Int,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "description") val description: String,
-    @ColumnInfo(name = "east") val east: Double,
-    @ColumnInfo(name = "north") val north: Double,
-    @ColumnInfo(name = "elevation") val elevation: Double,
+    @ColumnInfo(name = "east") val east: String,
+    @ColumnInfo(name = "north") val north: String,
+    @ColumnInfo(name = "elevation") val elevation: String,
 )
