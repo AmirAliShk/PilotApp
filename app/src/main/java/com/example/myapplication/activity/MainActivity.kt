@@ -1,5 +1,6 @@
-package com.example.myapplication
+package com.example.myapplication.activity
 
+import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,7 +11,10 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.fragment.AddPointFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,7 +38,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
         val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+            .findFragmentById(com.example.myapplication.R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -47,11 +51,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             if (isLocationPermissionGranted())
                 fusedLocationClient.lastLocation
                     .addOnSuccessListener { location: Location? ->
-                        Toast.makeText(
-                            this@MainActivity,
-                            "${location?.latitude}",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        val manager: FragmentManager = supportFragmentManager
+                        val transaction: FragmentTransaction = manager.beginTransaction()
+                        transaction.add(
+                            R.id.content,
+                            AddPointFragment(
+                                location?.latitude.toString(),
+                                location?.longitude.toString(),
+                                location?.bearing.toString()
+                            )
+                        )
+                        transaction.addToBackStack("")
+                        transaction.commit()
                     }
         }
     }
@@ -116,5 +127,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        } else {
+            Toast.makeText(
+                this@MainActivity,
+                "Goodbye :D",
+                Toast.LENGTH_LONG
+            ).show()
+            super.onBackPressed()
+        }
+    }
 }
