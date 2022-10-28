@@ -13,9 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.myapplication.app.MyApplication
 import com.example.myapplication.database.MyRoom
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.fragment.AddPointFragment
+import com.example.myapplication.fragment.PointsListFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,10 +30,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    val dataBase = MyRoom.getDatabase(applicationContext)
+
+    companion object {
+        val dataBase = MyRoom.getDatabase(MyApplication.context)
+    }
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +71,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         transaction.addToBackStack("")
                         transaction.commit()
                     }
+        }
+
+        binding.imgGpsList.setOnClickListener {
+            val manager: FragmentManager = supportFragmentManager
+            val transaction: FragmentTransaction = manager.beginTransaction()
+            transaction.add(
+                R.id.content,
+                PointsListFragment()
+            )
+            transaction.addToBackStack("null")
+            transaction.commit()
         }
     }
 
@@ -134,7 +150,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             supportFragmentManager.popBackStack()
         } else {
             Toast.makeText(
-                this@MainActivity,
+                MyApplication.context,
                 "Goodbye :D",
                 Toast.LENGTH_LONG
             ).show()

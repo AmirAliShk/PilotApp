@@ -1,6 +1,7 @@
 package com.example.myapplication.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,6 @@ class AddPointFragment(var east: String, var north: String, var elevation: Strin
         binding.edtElevation.setText(elevation)
 
         binding.btnAdd.setOnClickListener {
-            val locationsDao = MainActivity().dataBase.locationsDao()
             val loc = LocationsTable(
                 0,
                 binding.edtName.text.toString(),
@@ -31,11 +31,11 @@ class AddPointFragment(var east: String, var north: String, var elevation: Strin
                 binding.edtNorth.text.toString(),
                 binding.edtElevation.text.toString()
             )
-            locationsDao.insertLocation(loc)
+            MainActivity.dataBase.locationsDao().insertLocation(loc)
+
+            Log.i("TAG", "onCreateView: ${MainActivity.dataBase.locationsDao().getLocations()}")
         }
 
         return binding.root
     }
-
-
 }

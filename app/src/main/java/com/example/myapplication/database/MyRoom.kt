@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.myapplication.app.MyApplication
 
 // TODO when you change the entities structure, please increase the version of dataBase.
 @Database(
@@ -22,8 +23,8 @@ abstract class MyRoom : RoomDatabase() {
             // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
-                    context.applicationContext, MyRoom::class.java, "PilotAppDataBase"
-                ).build()
+                    MyApplication.context, MyRoom::class.java, "PilotAppDataBase"
+                ).allowMainThreadQueries().build()
                 INSTANCE = instance
                 // return instance
                 instance
