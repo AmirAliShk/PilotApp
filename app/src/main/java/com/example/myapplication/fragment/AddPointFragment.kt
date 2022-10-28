@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.myapplication.database.LocationsTable
+import com.example.myapplication.database.MyRoom
 import com.example.myapplication.databinding.FragmentAddPointBinding
 
 class AddPointFragment(var east: String, var north: String, var elevation: String) : Fragment() {
 
     private lateinit var binding: FragmentAddPointBinding
-
+    var database = MyRoom
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
