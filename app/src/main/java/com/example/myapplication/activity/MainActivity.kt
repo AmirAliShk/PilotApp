@@ -43,62 +43,63 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        MyApplication.currentActivity = this
 
-        val mapFragment = supportFragmentManager
-            .findFragmentById(com.example.myapplication.R.id.map) as SupportMapFragment
+        val mapFragment =
+            supportFragmentManager.findFragmentById(com.example.myapplication.R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         binding.imgGPS.setOnClickListener {
-            if (isLocationPermissionGranted())
-                checkGPS()
+            if (isLocationPermissionGranted()) checkGPS()
+
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                val loc = LatLng(location!!.latitude, location.longitude)
+                val cameraPosition = CameraPosition.Builder().target(
+                    loc
+                ).zoom(16f).build()
+
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+            }
         }
 
         binding.imgRecordGPS.setOnClickListener {
-            if (isLocationPermissionGranted())
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location: Location? ->
-                        val manager: FragmentManager = supportFragmentManager
-                        val transaction: FragmentTransaction = manager.beginTransaction()
-                        transaction.add(
-                            R.id.content,
-                            AddPointFragment(
-                                location?.latitude.toString(),
-                                location?.longitude.toString(),
-                                location?.bearing.toString()
-                            )
-                        )
-                        transaction.addToBackStack("")
-                        transaction.commit()
-                    }
+            if (isLocationPermissionGranted()) fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                val manager: FragmentManager = supportFragmentManager
+                val transaction: FragmentTransaction = manager.beginTransaction()
+                transaction.add(
+                    R.id.content, AddPointFragment(
+                        location?.latitude.toString(),
+                        location?.longitude.toString(),
+                        location?.bearing.toString()
+                    )
+                )
+                transaction.addToBackStack("")
+                transaction.commit()
+            }
         }
 
         binding.imgGpsList.setOnClickListener {
             val manager: FragmentManager = supportFragmentManager
             val transaction: FragmentTransaction = manager.beginTransaction()
             transaction.add(
-                R.id.content,
-                PointsListFragment()
+                R.id.content, PointsListFragment()
             )
             transaction.addToBackStack("null")
             transaction.commit()
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        mMap.uiSettings.isMyLocationButtonEnabled = false
+        mMap.isMyLocationEnabled = true
 
-        // Add a marker in Sydney and move the camera
         val tehran = LatLng(35.7219, 51.3347)
-
-        val cameraPosition = CameraPosition.Builder()
-            .target(
-                tehran
-            )
-            .zoom(11f)
-            .build()
-
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        val cameraPosition = CameraPosition.Builder().target(tehran).zoom(11f).build()
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 
     private fun checkGPS() {
@@ -123,20 +124,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun isLocationPermissionGranted(): Boolean {
         return if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                this, android.Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                this, android.Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
+                this, arrayOf(
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                109
+                ), 109
             )
             checkGPS()
             false
@@ -150,9 +147,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             supportFragmentManager.popBackStack()
         } else {
             Toast.makeText(
-                MyApplication.context,
-                "Goodbye :D",
-                Toast.LENGTH_LONG
+                MyApplication.context, "Goodbye :D", Toast.LENGTH_LONG
             ).show()
             super.onBackPressed()
         }
