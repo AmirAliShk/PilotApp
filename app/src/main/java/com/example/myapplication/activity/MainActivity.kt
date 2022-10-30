@@ -1,5 +1,6 @@
 package com.example.myapplication.activity
 
+import android.Manifest
 import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -90,16 +91,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         mMap.uiSettings.isMyLocationButtonEnabled = false
-        mMap.isMyLocationEnabled = true
 
         val tehran = LatLng(35.7219, 51.3347)
         val cameraPosition = CameraPosition.Builder().target(tehran).zoom(11f).build()
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        mMap.isMyLocationEnabled = true
     }
 
     private fun checkGPS() {
